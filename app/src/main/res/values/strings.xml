@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Aprendiendo_android_S6_FruitWorld2</string>
+    <string name="app_name">Fruit World 2</string>
+    <string name="example">Example</string>
 </resources>
