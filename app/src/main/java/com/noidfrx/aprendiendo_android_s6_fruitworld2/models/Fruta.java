@@ -18,10 +18,12 @@ public class Fruta {
         this.cantidad = cantidad;
     }
 
-    public void aumentarCantidad(){
+    public boolean aumentarCantidad(){
         if(cantidad < LIMITE_CANTIDAD){
             cantidad++;
+            return true;
         }
+        return false;
     }
 
     public void resetCantidad(){

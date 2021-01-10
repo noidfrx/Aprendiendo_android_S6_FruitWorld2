@@ -1,13 +1,12 @@
 package com.noidfrx.aprendiendo_android_s6_fruitworld2.adapters;
 
+import android.app.Activity;
 import android.content.Context;
-import android.media.Image;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,12 +23,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private List<Fruta> listaDeFrutas;
     private int layout;
     private OnItemClickListener itemClickListener;
-    private Context context;
+    private Activity activity;
 
-    public MyAdapter(List<Fruta> listaDeFrutas, int layout, OnItemClickListener itemClickListener) {
+    public MyAdapter(Activity activity, List<Fruta> listaDeFrutas, int layout, OnItemClickListener itemClickListener) {
         this.listaDeFrutas = listaDeFrutas;
         this.layout = layout;
         this.itemClickListener = itemClickListener;
+        this.activity = activity;
     }
 
 
@@ -37,14 +37,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public MyAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(layout,parent,false);
-        context = parent.getContext();
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyAdapter.ViewHolder holder, int position) {
-        holder.bind(listaDeFrutas.get(position),itemClickListener, context);
+        holder.bind(listaDeFrutas.get(position),itemClickListener, activity);
     }
 
     @Override
@@ -53,7 +52,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private ImageView ivFruta;
         private TextView tvNombre,tvDescripcion,tvCantidad;
 
@@ -63,11 +62,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             tvNombre = itemView.findViewById(R.id.tvNombre);
             tvDescripcion = itemView.findViewById(R.id.tvDescripcion);
             tvCantidad = itemView.findViewById(R.id.tvCantidad);
+            itemView.setOnCreateContextMenuListener(this);
 
         }
 
-        public void bind(Fruta fruta, OnItemClickListener listener, Context context){
-            Picasso.with(context).load(fruta.getImgBackground()).into(ivFruta);
+        public void bind(Fruta fruta, OnItemClickListener listener, Activity activity){
+            Picasso.with(activity).load(fruta.getImgBackground()).fit().into(ivFruta);
             tvNombre.setText(fruta.getNombre());
             tvDescripcion.setText(fruta.getDescripcion());
             tvCantidad.setText(""+fruta.getCantidad());
@@ -84,6 +84,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         }
 
 
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+            MenuInflater inflater = activity.getMenuInflater();
+            inflater.inflate(R.menu.context_menu_frutas,menu);
+
+        }
     }
 
     public interface OnItemClickListener{

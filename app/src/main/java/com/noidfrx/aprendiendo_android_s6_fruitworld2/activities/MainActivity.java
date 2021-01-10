@@ -2,6 +2,7 @@ package com.noidfrx.aprendiendo_android_s6_fruitworld2.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvFrutas;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private int counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,30 +37,38 @@ public class MainActivity extends AppCompatActivity {
         inicializaListaDeFrutas();
 
         rvFrutas = findViewById(R.id.rvFrutas);
+        rvFrutas.setHasFixedSize(true);
+        rvFrutas.setItemAnimator(new DefaultItemAnimator());
+
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new MyAdapter( listaDeFrutas, R.layout.recycler_view_item, new MyAdapter.OnItemClickListener() {
+        mAdapter = new MyAdapter(this, listaDeFrutas, R.layout.recycler_view_item, new MyAdapter.OnItemClickListener() {
 
             /*  Lo que se hará al hacer click a un item   */
             @Override
             public void onItemClick(String nombre, String descripcion, int imgBackground, int imgIcon, int cantidad, int position) {
-                Toast.makeText(MainActivity.this, "Esto es: "+nombre+" Posición: "+position, Toast.LENGTH_SHORT).show();
+                Fruta f = new Fruta(nombre,descripcion,imgBackground,imgIcon,cantidad);
+                if(f.aumentarCantidad()){
+                    Toast.makeText(MainActivity.this, "Item de posición: "+position+" modificado con éxito", Toast.LENGTH_SHORT).show();
+                    listaDeFrutas.set(position,f);
+                    mAdapter.notifyItemChanged(position);
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "Problemas con el aumento de cantidad", Toast.LENGTH_SHORT).show();
+                }
+
+
+
             }
         });
         rvFrutas.setLayoutManager(mLayoutManager);
         rvFrutas.setAdapter(mAdapter);
 
-        registerForContextMenu(rvFrutas);
     }
 
     private void inicializaListaDeFrutas() {
         listaDeFrutas = new ArrayList<>();
         listaDeFrutas.add(new Fruta("Strawberry", "Strawberry description", R.drawable.strawberry_bg, R.drawable.ic_strawberry, 0));
         listaDeFrutas.add(new Fruta("Strawberry", "Strawberry description", R.drawable.strawberry_bg, R.drawable.ic_strawberry, 0));
-        listaDeFrutas.add(new Fruta("Strawberry", "Strawberry description", R.drawable.strawberry_bg, R.drawable.ic_strawberry, 0));
-        listaDeFrutas.add(new Fruta("Strawberry", "Strawberry description", R.drawable.strawberry_bg, R.drawable.ic_strawberry, 0));
-        listaDeFrutas.add(new Fruta("Strawberry", "Strawberry description", R.drawable.strawberry_bg, R.drawable.ic_strawberry, 0));
-        listaDeFrutas.add(new Fruta("Strawberry", "Strawberry description", R.drawable.strawberry_bg, R.drawable.ic_strawberry, 0));
-
     }
 
     @Override
@@ -72,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.add_fruta:{
-                Toast.makeText(MainActivity.this, "Add fruta",Toast.LENGTH_SHORT).show();
+                addFruta();
                 break;
             }
             default:break;
@@ -80,6 +90,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void addFruta() {
+        Toast.makeText(MainActivity.this, "Fruta añadida con éxito",Toast.LENGTH_SHORT).show();
+        Fruta f = new Fruta(
+                "Nueva fruta : "+counter,
+                "Fruta "+counter+" añadida",
+                R.drawable.fruit_world_2,
+                R.drawable.ic_fruits,
+                0);
+        listaDeFrutas.add(counter,f);
+        mAdapter.notifyItemInserted(counter);
+        mLayoutManager.scrollToPosition(counter);
+        counter++;
     }
 
 
